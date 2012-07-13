@@ -6,7 +6,7 @@ using Microsoft.Kinect;
 using System.Windows.Media;
 using Midi;
 
-
+/*
 namespace SkeletalTracking {
 
     // because things are retarded and I cant write to the
@@ -25,7 +25,7 @@ namespace SkeletalTracking {
 
     // A cube that plays a single note
     public class SingleNoteCube : Cube {
-        public SingleNoteCube(BaloonCoordinate center, float radius,/*Canvas canvas*/
+        public SingleNoteCube(BaloonCoordinate center, float radius,
                 Pitch pitch, int octave, Instrument instrument, OutputDevice device, Channel channel) 
             : base(center, radius, new InstrumentNoteAction(device, channel, pitch, octave)) {
         }
@@ -33,19 +33,19 @@ namespace SkeletalTracking {
 
     // A sphere that plays a single note
     public class SingleNoteSphere : Sphere {
-        public SingleNoteSphere(BaloonCoordinate center, float radius,/*Canvas canvas*/
+        public SingleNoteSphere(BaloonCoordinate center, float radius,
                 Pitch pitch, int octave, Instrument instrument, OutputDevice device, Channel channel)
             : base(center, radius, new InstrumentNoteAction(device, channel, pitch, octave)) {
         }
     }
 
-    /*public class MultiNoteCube : Cube {
+    //public class MultiNoteCube : Cube {
         // collection of 56 SingleNoteCubes
-    }
+    //}
 
-    public class SoundFileCube : Cube {
+    //public class SoundFileCube : Cube {
 
-    }*/
+    //}
 
     // general definition of an action
     public interface Action {
@@ -133,7 +133,7 @@ namespace SkeletalTracking {
         public Color               Color { get; set; }
         public Action              Action { get; set; }
 
-        public Shape(BaloonCoordinate center, float radius, Action action /*Canvas canvas*/) {
+        public Shape(BaloonCoordinate center, float radius, Action action) {
             Center = center;
             Radius = radius;
             Action = action;
@@ -207,15 +207,15 @@ namespace SkeletalTracking {
             // now we need to nuke the joints
 
             // first of all, denotify
-            /*List<Cube> notDenotifiedCubes = new List<Cube>();
-            foreach (Cube c in deNotifyCubes)
-                if (c.IsThisPointInBounds(point))
-                    notDenotifiedCubes.Add(c);  // if its still in bounds we want to check again
-                else
-                    c.PointLeftBounds();    // otherwise call its left bounds function
+            //List<Cube> notDenotifiedCubes = new List<Cube>();
+            //foreach (Cube c in deNotifyCubes)
+            //    if (c.IsThisPointInBounds(point))
+            //        notDenotifiedCubes.Add(c);  // if its still in bounds we want to check again
+            //    else
+            //        c.PointLeftBounds();    // otherwise call its left bounds function
 
-            deNotifyCubes = notDenotifiedCubes;   // swap the lists
-            */
+            //deNotifyCubes = notDenotifiedCubes;   // swap the lists
+            
             // denotify queue
             // (we want a cube thats been entered to check if it goes out)
             
@@ -223,3 +223,4 @@ namespace SkeletalTracking {
         }
     }
 }
+*/

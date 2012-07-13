@@ -1,0 +1,13 @@
+﻿<Window x:Class="Balloon.KinectChooser"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="KinectChooser" Width="640" Height="480"
+        xmlns:my="clr-namespace:Microsoft.Samples.Kinect.WpfViewers;assembly=Microsoft.Samples.Kinect.WpfViewers" 
+        Loaded="Window_Loaded"
+        Closing="Window_Closing">
+    <Grid>
+            <my:KinectSensorChooser Name="kinectSensorChooser" />
+            <my:KinectColorViewer Name="kinectColourViewer" Kinect="{Binding ElementName=kinectSensorChooser, Path=Kinect}" />
+            <my:KinectSkeletonViewer Name="kinectSkeletonViewer" Kinect="{Binding ElementName=kinectSensorChooser, Path=Kinect}" />
+    </Grid>
+</Window>

@@ -19,7 +19,7 @@ using System.Windows.Shapes;
 using Microsoft.Kinect;
 using Coding4Fun.Kinect.Wpf;
 using Midi; 
-
+/*
 namespace SkeletalTracking
 {
     /// <summary>
@@ -50,20 +50,20 @@ namespace SkeletalTracking
             // create default cubes
             OutputDevice device = OutputDevice.InstalledDevices[0];
             device.Open();
-            /*Channel channel = Channel.Channel1;
-            Instrument instrument = Instrument.AltoSax;
-            SingleNoteCube a = new SingleNoteCube(new BaloonCoordinate(0.0f, 0.0f, 2.5f), 0.25f, new Note("C"), 4, instrument, device, channel);
-            device.SendProgramChange(channel, instrument);
-            //mainNotifier.Shapes.Add(a);
+            //Channel channel = Channel.Channel1;
+            //Instrument instrument = Instrument.AltoSax;
+            //SingleNoteCube a = new SingleNoteCube(new BaloonCoordinate(0.0f, 0.0f, 2.5f), 0.25f, new Note("C"), 4, instrument, device, channel);
+            //device.SendProgramChange(channel, instrument);
+            ////mainNotifier.Shapes.Add(a);
 
-            Instrument instrumentb = Instrument.OverdrivenGuitar;
-            Channel channelb = Channel.Channel2;
-            SingleNoteSphere b = new SingleNoteSphere(new BaloonCoordinate(0.75f, 0.75f, 1.75f), 0.5f, new Note("G"), 4, instrumentb, device, channelb);
-            device.SendProgramChange(channelb, instrumentb);*/
+            //Instrument instrumentb = Instrument.OverdrivenGuitar;
+            //Channel channelb = Channel.Channel2;
+            //SingleNoteSphere b = new SingleNoteSphere(new BaloonCoordinate(0.75f, 0.75f, 1.75f), 0.5f, new Note("G"), 4, instrumentb, device, channelb);
+            //device.SendProgramChange(channelb, instrumentb);
             //mainNotifier.Shapes.Add(b);
 
             
-            /* Fun tests :) */
+            // Fun tests :)
             //createAFuckTonneOfCubes(new Note("C"), 64, 1f);
             MidiSettings settings = new MidiSettings() {
                 device = OutputDevice.InstalledDevices[0],
@@ -140,24 +140,24 @@ namespace SkeletalTracking
             }
         }
 
-        /*void createAFuckTonneOfCubes(Note scaleNote, int noCubes, float cubeRadius) {
-            Scale scale = new Scale(scaleNote, Scale.Major);
-            Random random = new Random();
-            OutputDevice device = OutputDevice.InstalledDevices[0];
-            Channel channel = Channel.Channel1;
-            Instrument instrument = Instrument.Pad2Warm;
+        //void createAFuckTonneOfCubes(Note scaleNote, int noCubes, float cubeRadius) {
+        //    Scale scale = new Scale(scaleNote, Scale.Major);
+        //    Random random = new Random();
+        //    OutputDevice device = OutputDevice.InstalledDevices[0];
+        //    Channel channel = Channel.Channel1;
+        //    Instrument instrument = Instrument.Pad2Warm;
 
-            for (int i = 0; i < noCubes; i++) {
+        //    for (int i = 0; i < noCubes; i++) {
 
-                float x = (float)(random.NextDouble() - 0.5) * 2;
-                float y = (float)(random.NextDouble() - 0.5) * 2;
-                float z = 2.5f;//; + (float)(random.NextDouble() - random.NextDouble());
+        //        float x = (float)(random.NextDouble() - 0.5) * 2;
+        //        float y = (float)(random.NextDouble() - 0.5) * 2;
+        //        float z = 2.5f;//; + (float)(random.NextDouble() - random.NextDouble());
 
-                SingleNoteCube a = new SingleNoteCube(new BaloonCoordinate(x, y, z), 0.2f, scale.NoteSequence[i % 7], 4, instrument, device, channel);
-                device.SendProgramChange(channel, instrument);
-                mainNotifier.Shapes.Add(a);
-            }
-        }*/
+        //        SingleNoteCube a = new SingleNoteCube(new BaloonCoordinate(x, y, z), 0.2f, scale.NoteSequence[i % 7], 4, instrument, device, channel);
+        //        device.SendProgramChange(channel, instrument);
+        //        mainNotifier.Shapes.Add(a);
+        //    }
+        //}
 
         // Event that gets fired when this kinect sensor changer .. changes
         void kinectSensorChooser1_KinectSensorChanged(object sender, DependencyPropertyChangedEventArgs e) {
@@ -214,12 +214,14 @@ namespace SkeletalTracking
                     //mainNotifier.Joints.Clear();
                     //mainNotifier.Joints.Add(leftHandJoint);
                     //mainNotifier.Joints.Add(rightHandJoint);
-                    mainNotifier.addJoint(JointType.HandLeft);
-                    mainNotifier.addJoint(JointType.HandRight);
-                    mainNotifier.addJoint(JointType.Head);
+
+                    //mainNotifier.addJoint(JointType.HandLeft);
+                    //mainNotifier.addJoint(JointType.HandRight);
+
+                    mainNotifier.addJoint(JointType.FootLeft);
 
 
-                    /* debug */
+                    // debug //
                     lblX.Content = String.Format("x: {0}", rightHandJoint.Position.X);
                     lblY.Content = String.Format("y: {0}", rightHandJoint.Position.Y);
                     lblZ.Content = String.Format("z: {0}", rightHandJoint.Position.Z);
@@ -294,3 +296,4 @@ namespace SkeletalTracking
         }
     }
 }
+*/
