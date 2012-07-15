@@ -51,8 +51,9 @@ namespace Balloon {
             List<Cube> cubes = new List<Cube>();
 
             //cubes.Add(new Cubes.SingleNoteCube(new System.Windows.Media.Media3D.Point3D(-0.5, 0, 2), 0.2, Pitch.C4, instrument, device, channel));
-            cubes.Add(new Cubes.YPitchBendCube(new System.Windows.Media.Media3D.Point3D(0, 0, 2), 0.4, Pitch.G4, instrument, device, channel));
+            //cubes.Add(new Cubes.YPitchBendCube(new System.Windows.Media.Media3D.Point3D(0, 0, 2), 0.4, Pitch.G4, instrument, device, channel));
 
+            fun.Fun.GenerateAFuckTonneOfCubes(Engine, Interface, new Note("C"), 50, new Point3D(0, 0, 2), 2, 0.5);
 
             foreach (Cube cube in cubes) {
                 Engine.AddCube(cube);

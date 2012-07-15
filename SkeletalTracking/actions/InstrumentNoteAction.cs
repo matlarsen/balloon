@@ -29,7 +29,9 @@ namespace Balloon.Actions {
         public void DoAction() {
             // start playing the note
             if (!isPlaying) {
-                Device.SendNoteOn(Channel, internalPitch, 64);
+                if (!internalPitch.IsInMidiRange())
+                    internalPitch = Pitch.C4;
+                Device.SendNoteOn(Channel, internalPitch, 64 );
                 isPlaying = true;
             }
         }

@@ -26,7 +26,8 @@ namespace Balloon.Cubes {
         // we want to notify all the subcubes
         public void NotifyAnalogue(Vector3D vector) {
             // convert the y relative into a bend
-            outputDevice.SendPitchBend(channel, 63 + ((int)vector.Y * 64));
+            System.Diagnostics.Debug.WriteLine("" + (8192 + (int)(vector.Y * 8192)));
+            outputDevice.SendPitchBend(channel, 8192 + (int)(vector.Y * 8192));
         }
     }
 }

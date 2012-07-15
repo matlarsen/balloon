@@ -88,6 +88,7 @@
     <Compile Include="cubes\NullCube.cs" />
     <Compile Include="cubes\SingleNoteCube.cs" />
     <Compile Include="Engine.cs" />
+    <Compile Include="fun\Fun.cs" />
     <Compile Include="Interface.xaml.cs">
       <DependentUpon>Interface.xaml</DependentUpon>
     </Compile>

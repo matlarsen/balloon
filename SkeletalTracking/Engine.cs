@@ -156,10 +156,13 @@ namespace Balloon.Engine {
                                         DenotifyQueue[skeleton.TrackingId][jointType].Add(cube);
                                         cube.Notify();
                                     }
-                                    else if (cube is AnalogueCube) {
-                                        // if its an analogue cube we have to always notify with the
-                                        // reletave x position
-                                        ((AnalogueCube)cube).NotifyAnalogue(_3DUtil.UnitDirectionVectorFromPointAToB(cube.Center, jointLocation));
+                                    else {
+                                        AnalogueCube analogueCube = cube as AnalogueCube;
+                                        if (analogueCube != null) {
+                                            // if its an analogue cube we have to always notify with the
+                                            // reletave x position
+                                            ((AnalogueCube)cube).NotifyAnalogue(_3DUtil.UnitDirectionVectorFromPointAToB(cube.Center, jointLocation));
+                                        }
                                     }
                                 }
 
