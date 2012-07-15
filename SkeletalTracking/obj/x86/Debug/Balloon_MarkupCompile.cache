@@ -4,16 +4,16 @@
 winexe
 C#
 .cs
-C:\Users\Badger\repos\baloon\SkeletalTracking\obj\x86\Debug\
+C:\Users\Badger\repos\balloon\SkeletalTracking\obj\x86\Debug\
 Balloon
 none
 false
 DEBUG;TRACE
-C:\Users\Badger\repos\baloon\SkeletalTracking\App.xaml
+C:\Users\Badger\repos\balloon\SkeletalTracking\App.xaml
 31220323609
 
-141631531533
-16-927414904
+18-97344758
+16977464753
 Interface.xaml;KinectChooser.xaml;MainWindow.xaml;
 
 False

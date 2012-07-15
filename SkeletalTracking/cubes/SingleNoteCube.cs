@@ -10,7 +10,7 @@ namespace Balloon.Cubes {
     /// A Cube that plays a single note
     /// </summary>
     public class SingleNoteCube : Cube {
-        public SingleNoteCube(Point3D center, float radius,
+        public SingleNoteCube(Point3D center, double radius,
                 Pitch pitch, Instrument instrument, OutputDevice device, Channel channel)
             : base(center, radius, new InstrumentNoteAction(device, channel, pitch)) {
         }

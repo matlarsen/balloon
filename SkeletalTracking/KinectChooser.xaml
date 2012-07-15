@@ -6,8 +6,9 @@
         Loaded="Window_Loaded"
         Closing="Window_Closing">
     <Grid>
-            <my:KinectSensorChooser Name="kinectSensorChooser" />
+            
             <my:KinectColorViewer Name="kinectColourViewer" Kinect="{Binding ElementName=kinectSensorChooser, Path=Kinect}" />
-            <my:KinectSkeletonViewer Name="kinectSkeletonViewer" Kinect="{Binding ElementName=kinectSensorChooser, Path=Kinect}" />
+        <my:KinectSkeletonViewer Name="kinectSkeletonViewer" Kinect="{Binding ElementName=kinectSensorChooser, Path=Kinect}" Width="640" Height="480"/>
+        <my:KinectSensorChooser Name="kinectSensorChooser" />
     </Grid>
 </Window>

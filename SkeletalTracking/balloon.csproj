@@ -63,6 +63,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AnalogCube.cs" />
     <Page Include="Interface.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -75,6 +76,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Compile Include="3DUtil.cs" />
     <Compile Include="Action.cs" />
     <Compile Include="actions\InstrumentNoteAction.cs" />
     <Compile Include="App.xaml.cs">
@@ -82,6 +84,8 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Cube.cs" />
+    <Compile Include="cubes\YPitchBendCube.cs" />
+    <Compile Include="cubes\NullCube.cs" />
     <Compile Include="cubes\SingleNoteCube.cs" />
     <Compile Include="Engine.cs" />
     <Compile Include="Interface.xaml.cs">

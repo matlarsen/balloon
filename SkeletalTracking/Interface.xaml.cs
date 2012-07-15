@@ -10,6 +10,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Windows.Media.Media3D;
 
 namespace Balloon {
     /// <summary>
@@ -18,6 +19,10 @@ namespace Balloon {
     public partial class Interface : Window {
         public Interface() {
             InitializeComponent();
+        }
+
+        public void AddCube(Cube cube) {
+            Orthographic.Children.Add(cube.ModelVisual3D);
         }
     }
 }
