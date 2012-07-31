@@ -23,9 +23,10 @@ namespace Balloon {
             kinectSensorChooser.KinectSensorChanged += new DependencyPropertyChangedEventHandler(KinectSensorChanged);
         }
 
-        // on window closing, stop the kinect
+        // on window closing, stop the kinect, kill the interface
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
             App.Engine.StopKinect();
+            App.Interface.Close();
         }
 
         // what to do when the state of the kinect changes

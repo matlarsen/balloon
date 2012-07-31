@@ -36,10 +36,8 @@ C:\Users\Badger\repos\balloon\SkeletalTracking\bin\Debug\Midi.xml
 C:\Users\Badger\repos\balloon\SkeletalTracking\obj\x86\Debug\ResolveAssemblyReference.cache
 C:\Users\Badger\repos\balloon\SkeletalTracking\obj\x86\Debug\Interface.baml
 C:\Users\Badger\repos\balloon\SkeletalTracking\obj\x86\Debug\KinectChooser.baml
-C:\Users\Badger\repos\balloon\SkeletalTracking\obj\x86\Debug\MainWindow.baml
 C:\Users\Badger\repos\balloon\SkeletalTracking\obj\x86\Debug\Interface.g.cs
 C:\Users\Badger\repos\balloon\SkeletalTracking\obj\x86\Debug\KinectChooser.g.cs
-C:\Users\Badger\repos\balloon\SkeletalTracking\obj\x86\Debug\MainWindow.g.cs
 C:\Users\Badger\repos\balloon\SkeletalTracking\obj\x86\Debug\App.g.cs
 C:\Users\Badger\repos\balloon\SkeletalTracking\obj\x86\Debug\Balloon_MarkupCompile.cache
 C:\Users\Badger\repos\balloon\SkeletalTracking\obj\x86\Debug\Balloon.g.resources

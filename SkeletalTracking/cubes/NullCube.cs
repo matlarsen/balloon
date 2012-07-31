@@ -8,14 +8,12 @@ using System.Windows.Media;
 
 namespace Balloon.Cubes {
     /// <summary>
-    /// A Cube that plays a single note
+    /// A Null Cube that does nothing
     /// </summary>
     public class NullCube : Cube {
         public NullCube(Point3D center, double radius)
             : base(center, radius, null) {
-                //System.Windows.MessageBox.Show("created nullcube");
-                Opacity = 1;
-                Color = new SolidColorBrush(Colors.Gray);
+                Color = Colors.Gray;
         }
     }
 }

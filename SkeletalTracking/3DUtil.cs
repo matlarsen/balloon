@@ -5,30 +5,15 @@ using System.Text;
 using System.Windows.Media.Media3D;
 using System.Windows.Media;
 
-namespace Balloon {
+namespace Balloon.Engine {
     public static class _3DUtil {
 
-
-        public static MeshGeometry3D CubeMeshFromPoints(Point3D[] points) {
-            MeshGeometry3D meshGeometry3D = new MeshGeometry3D();
-            if (points.Length < 8) return null;
-            for (int i = 0; i < 8; i++) {
-                meshGeometry3D.Positions.Add(points[i]);
-
-                foreach (int index in new int[] { 2, 3, 1, 2, 1, 0, 7, 1, 3, 7, 5, 1, 6, 5, 7, 6, 4, 5, 6, 2, 0, 2, 0, 4, 2, 7, 3, 2, 6, 7, 0, 1, 5, 0, 5, 4 })
-                    meshGeometry3D.TriangleIndices.Add(index);
-            }
-            return meshGeometry3D;
-        }
-
-        public static MeshGeometry3D GetMeshGeometry3DFromCenterAndRadius(Point3D center, double radius) {
-            MeshGeometry3D newMeshGeometry3D = new MeshGeometry3D();
-            newMeshGeometry3D.Positions = GetPoint3DCollectionFromCenterAndRadius(center, radius);
-            foreach (int index in new int[] { 2, 3, 1, 2, 1, 0, 7, 1, 3, 7, 5, 1, 6, 5, 7, 6, 4, 5, 6, 2, 0, 2, 0, 4, 2, 7, 3, 2, 6, 7, 0, 1, 5, 0, 5, 4 })
-                newMeshGeometry3D.TriangleIndices.Add(index);
-            return newMeshGeometry3D;
-        }
-
+        /// <summary>
+        /// Get a collection of points that represents a cube around this point
+        /// </summary>
+        /// <param name="center"></param>
+        /// <param name="radius"></param>
+        /// <returns></returns>
         public static Point3DCollection GetPoint3DCollectionFromCenterAndRadius(Point3D center, double radius) {
             Point3DCollection point3dCollection = new Point3DCollection(8);
             point3dCollection.Add(new Point3D(center.X - radius, center.Y - radius, center.Z + radius)); //0
@@ -42,11 +27,23 @@ namespace Balloon {
             return point3dCollection;
         }
 
+        /// <summary>
+        /// Combine a mesh and material into a ModelVisual3D
+        /// </summary>
+        /// <param name="mesh"></param>
+        /// <param name="material"></param>
+        /// <returns></returns>
         public static ModelVisual3D WrapMeshAndMaterialIntoModelVisual3D(MeshGeometry3D mesh, Material material) {
             GeometryModel3D geometryModel3d = new GeometryModel3D(mesh, material);
             return new ModelVisual3D() { Content = geometryModel3d };
         }
 
+        /// <summary>
+        /// Calculate the Unit Direction vector from one point to another
+        /// </summary>
+        /// <param name="to"></param>
+        /// <param name="from"></param>
+        /// <returns></returns>
         public static Vector3D UnitDirectionVectorFromPointAToB(Point3D to, Point3D from) {
             Point3D direction = new Point3D();
             direction.X = from.X - to.X;
@@ -62,6 +59,14 @@ namespace Balloon {
             direction.Z /= length;
 
             return new Vector3D(direction.X, direction.Y, direction.Z);
+        }
+
+        public static Vector3D VectorFromPointAToB(Point3D to, Point3D from) {
+            Vector3D direction = new Vector3D();
+            direction.X = from.X - to.X;
+            direction.Y = from.Y - to.Y;
+            direction.Z = from.Z - to.Z;
+            return direction;
         }
     }
 }
