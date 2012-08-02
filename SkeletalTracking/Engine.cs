@@ -10,6 +10,7 @@ using Balloon.Cubes;
 using HelixToolkit.Wpf;
 using System.Windows.Media;
 using System.Windows;
+using System.Diagnostics;
 
 namespace Balloon.Engine {
 
@@ -18,6 +19,10 @@ namespace Balloon.Engine {
 
     public class Engine {
 
+        // a utility property, for getting a null origin thingy
+        public static Point3D            Origin { get { return new Point3D(); } }
+
+        // properties of the engine
         public KinectSensor              Kinect { get; private set; }
         public TransformSmoothParameters SmoothParameters { get; set; }
         public List<JointType>           JointsToTrack { get; private set; }
@@ -26,13 +31,20 @@ namespace Balloon.Engine {
         public World                     World { get; private set; }
         public EngineMode                Mode { get; set; }
 
+        // internal workings of the engine
         private List<Cube>                                           Cubes { get; set; }
         private Dictionary<int, Dictionary<JointType, List<Cube>>>   DenotifyQueue { get; set; }
         private Dictionary<int, Dictionary<JointType, CubeVisual3D>> Joint3DGeometry { get; set; }
-
-
+        
+        // floor and angle utility 
         private double[] floorStabilisationAngles = new double[_Constants.FloorStabilisationSamples];
         private int currentFloorStabilisationAngleIndex = 0;
+
+        // create mode
+        private Cube createCube;
+        private bool handsTogether = false;
+        private long stableTime;
+        private Point3D previousPoint;
 
         /// <summary>
         /// Constructs an engine that tracks the first skeletons' arms with the default transform settings
@@ -168,74 +180,63 @@ namespace Balloon.Engine {
 
 
             // ok at this point we should be all stable and ready to do operations
-            // now depending on what mode we are in, depends on what we do now
-            switch (Mode) {
+            if (Mode != EngineMode.NoInteractive) {
 
-                // create cube mode
-                case EngineMode.CreateCube:
+                // first thing we need to do is register our skeletons & joints
+                // and sort out their reference 3d geometry
+                // for each skeleton
+                foreach (Skeleton skeleton in Skeletons) {
 
-                    // there are 3 steps to this:
-                    // 1: Start creating the cube when the hands are together
+                    // only track full skeletons that we can find (will be 2 - all the API supports)
+                    if (skeleton != null && skeleton.TrackingState == SkeletonTrackingState.Tracked) {
 
-                    // 2: creation mode: move and size a placement cube
+                        // initialise this skeleton if we need to
+                        if (!DenotifyQueue.ContainsKey(skeleton.TrackingId))
+                            DenotifyQueue.Add(skeleton.TrackingId, new Dictionary<JointType, List<Cube>>()); // initialise it
 
-                    // 3: trigger the storing of the cube in its place
+                        // and the joint geometry if we need to
+                        if (!Joint3DGeometry.ContainsKey(skeleton.TrackingId))
+                            Joint3DGeometry.Add(skeleton.TrackingId, new Dictionary<JointType, CubeVisual3D>());
 
-                    break;
+                        // for each jointType
+                        foreach (JointType jointType in JointsToTrack) {
 
-                // Normal mode means check for interaction with cubes
-                case EngineMode.NormalInteractive:
+                            // check its being tracked by the skeleton tracker
+                            if (skeleton.Joints[jointType].TrackingState != JointTrackingState.NotTracked) {
 
-                    // now we need to do cube notification
-                    // for each skeleton
-                    foreach (Skeleton skeleton in Skeletons) {
+                                // transform the location of this joint to something more useful
+                                Point3D jointLocation = new Point3D(skeleton.Joints[jointType].Position.X, skeleton.Joints[jointType].Position.Y, skeleton.Joints[jointType].Position.Z);
+                                jointLocation.X = -jointLocation.X;
 
-                        // only track full skeletons that we can find (will be 2 - all the API supports)
-                        if (skeleton != null && skeleton.TrackingState == SkeletonTrackingState.Tracked) {
+                                // initialise in our denotify queue
+                                if (!DenotifyQueue[skeleton.TrackingId].ContainsKey(jointType))
+                                    DenotifyQueue[skeleton.TrackingId].Add(jointType, new List<Cube>());    // initialise it
 
-                            // initialise this skeleton if we need to
-                            if (!DenotifyQueue.ContainsKey(skeleton.TrackingId))
-                                DenotifyQueue.Add(skeleton.TrackingId, new Dictionary<JointType, List<Cube>>()); // initialise it
+                                // create some geometry for the joint if necessary (to visualise)
+                                if (!Joint3DGeometry[skeleton.TrackingId].ContainsKey(jointType)) {
+                                    CubeVisual3D cube = new CubeVisual3D() {
+                                        SideLength = _Constants.JointRadius,
+                                        Center = jointLocation,
+                                        Material = MaterialHelper.CreateMaterial(_Constants.JointBrush, _Constants.JointBrush)
+                                    };
+                                    Joint3DGeometry[skeleton.TrackingId].Add(jointType, cube);
+                                    World.JointObjects.Children.Add(cube);
+                                }
 
-                            // and the joint geometry if we need to
-                            if (!Joint3DGeometry.ContainsKey(skeleton.TrackingId))
-                                Joint3DGeometry.Add(skeleton.TrackingId, new Dictionary<JointType, CubeVisual3D>());
+                                // Move the joint representation geometry
+                                Joint3DGeometry[skeleton.TrackingId][jointType].Center = jointLocation;
 
-                            // for each jointType
-                            foreach (JointType jointType in JointsToTrack) {
+                                // adjust the joint geometry because of the world transform
+                                jointLocation.Y += World.FloorHeight;
 
-                                // check its being tracked by the skeleton tracker
-                                if (skeleton.Joints[jointType].TrackingState != JointTrackingState.NotTracked) {
 
-                                    // transform the location of this joint to something more useful
-                                    Point3D jointLocation = new Point3D(skeleton.Joints[jointType].Position.X, skeleton.Joints[jointType].Position.Y, skeleton.Joints[jointType].Position.Z);
-                                    jointLocation.X = -jointLocation.X;
-
-                                    // initialise in our denotify queue
-                                    if (!DenotifyQueue[skeleton.TrackingId].ContainsKey(jointType))
-                                        DenotifyQueue[skeleton.TrackingId].Add(jointType, new List<Cube>());    // initialise it
-
-                                    // create some geometry for the joint if necessary (to visualise)
-                                    if (!Joint3DGeometry[skeleton.TrackingId].ContainsKey(jointType)) {
-                                        CubeVisual3D cube = new CubeVisual3D() {
-                                            SideLength = _Constants.JointRadius,
-                                            Center = jointLocation,
-                                            Material = MaterialHelper.CreateMaterial(_Constants.JointBrush, _Constants.JointBrush)
-                                        };
-                                        Cube jointRepresentation = new NullCube(jointLocation, 0.03);
-                                        Joint3DGeometry[skeleton.TrackingId].Add(jointType, cube);
-                                        World.JointObjects.Children.Add(cube);
-                                    }
-
-                                    // Move the joint representation geometry
-                                    Joint3DGeometry[skeleton.TrackingId][jointType].Center = jointLocation;
-
-                                    // adjust the joint geometry because of the world transform
-                                    jointLocation.Y += World.FloorHeight;
+                                // now go through our notification queue
+                                // only do this if we are in normal interaction mode
+                                if (Mode == EngineMode.NormalInteractive) {
 
                                     // if the point of this joint is in a cube
                                     foreach (Cube cube in Cubes) {
-                                        if (cube.Rect3D.Contains(jointLocation)) {
+                                        if (cube.ModelVisual3D.Content.Bounds.Contains(jointLocation)) {
 
                                             // and the cube is not already notified (if someone hasnt already stuck their limb in there)
                                             if (!cube.Notified) {
@@ -249,7 +250,7 @@ namespace Balloon.Engine {
                                                 if (analogueCube != null) {
                                                     // if its an analogue cube we have to always notify with the
                                                     // reletave x position
-                                                    ((AnalogueCube)cube).NotifyAnalogue(_3DUtil.UnitDirectionVectorFromPointAToB(cube.Center, jointLocation));
+                                                    ((AnalogueCube)cube).NotifyAnalogue(_3DUtil.UnitDirectionVectorFromPointAToB(cube.ModelVisual3D.Content.Bounds.Location, jointLocation));
                                                 }
                                             }
                                         }
@@ -263,23 +264,107 @@ namespace Balloon.Engine {
                                         }
                                     }
                                 }
-                                else {  // this joint has been marked as not tracked. So we need to denotify all its cubes
-                                    foreach (Cube cube in DenotifyQueue[skeleton.TrackingId][jointType])
-                                        cube.DeNotify();
-                                    // kill from our view
-                                    World.JointObjects.Children.Remove(Joint3DGeometry[skeleton.TrackingId][jointType]);
-                                }
+                            }
+                            else {  // this joint has been marked as not tracked. So we need to denotify all its cubes
+                                foreach (Cube cube in DenotifyQueue[skeleton.TrackingId][jointType])
+                                    cube.DeNotify();
+                                // kill from our view
+                                World.JointObjects.Children.Remove(Joint3DGeometry[skeleton.TrackingId][jointType]);
                             }
                         }
-                    } break;
 
-                // invalid mode - do fuck all
-                default: break;
+                        // at this point all our joints are guaranteed to have been registered / moved
+                        // so now we need to do our CRMD operations
+                        // notification of cubes was already disabled if we are in one of these modes (not the interactivenormal mode)
+                        // first of all, make sure our pre-requisites are in place
+                        if (JointsToTrack.Contains(JointType.HandLeft) && JointsToTrack.Contains(JointType.HandRight)
+                            && Skeletons.Length > 0) {
+
+                            // what mode are we in
+                            switch (Mode) {
+
+                                // Create mode - we are making a coooob!
+                                case EngineMode.CreateCube:
+                                    Point3D leftHandPoint = Joint3DGeometry[skeleton.TrackingId][JointType.HandLeft].Center;
+                                    Point3D rightHandPoint = Joint3DGeometry[skeleton.TrackingId][JointType.HandRight].Center;
+
+                                    // ok well this depends on what stage of the process we are in
+
+                                    // step 1
+                                    // wait until the hands are within distance of each other
+                                    if (!handsTogether) {
+                                        if (_3DUtil.DistanceBetween(leftHandPoint, rightHandPoint) <= _Constants.CreateHandDistance) {
+                                            handsTogether = true;
+                                            Debug.WriteLine("Hands are together");
+                                        }
+                                    }
+                                    else {
+                                        // step 2
+                                        // move and resize the cube we are creating relative to the hands
+                                        Point3D cubeCenter = _3DUtil.Midpoint(leftHandPoint, rightHandPoint);
+                                        cubeCenter.Y += World.FloorHeight;
+                                        createCube.Resize(_3DUtil.DistanceBetween(leftHandPoint, rightHandPoint) / 2.0);
+                                        createCube.MoveTo(cubeCenter);
+
+                                        // step 3
+                                        // we need to materialise the cube and get out of this process
+                                        // we do this through a timeout 
+                                        // or TODO: A signal
+                                        
+                                        // reset the counter if we fall outside the deadzone
+                                        if (previousPoint == null || _3DUtil.DistanceBetween(previousPoint, cubeCenter) > _Constants.CreateStableDeadzone) {
+                                            Debug.WriteLine("resetting create counter");
+                                            previousPoint = cubeCenter;
+                                            stableTime = DateTime.Now.Ticks;
+                                        }
+                                        // otherwise if our time has elapsed, material the arsehole and leave create mode!
+                                        else {
+                                            long currentTime = DateTime.Now.Ticks;
+                                            if ((currentTime - stableTime) / TimeSpan.TicksPerMillisecond >= _Constants.CreateStableTimout) {
+                                                Debug.WriteLine("timeout, cube is materialised");
+                                                Mode = EngineMode.NormalInteractive;
+                                            }
+                                        }
+                                    }
+                                    break;
+                                case EngineMode.DeleteCube:
+
+                                    break;
+                                case EngineMode.MoveCube:
+
+                                    break;
+                            }
+
+                        }
+
+
+                    }
+                }
             }
 
             // drawing of the cubes is handled already
             // we're a done done!
             skeletonFrame.Dispose();
+        }
+
+
+        /// <summary>
+        /// Sets the engine to create mode for the specified cube
+        /// </summary>
+        /// <param name="cubeToCreate"></param>
+        public void EnterCreateCubeMode(Cube cubeToCreate) {
+            // put the engine in create mode
+            Mode = EngineMode.CreateCube;
+            handsTogether = false;
+
+            // assign the local create cube object
+            createCube = cubeToCreate;
+
+            // add to our world; make sure it has the same transform as joints though
+            //createCube.ModelVisual3D.Transform = World.FloorTransform;
+            AddCube(createCube);
+            
+            Debug.WriteLine("entered create mode");
         }
 
 
@@ -398,8 +483,8 @@ namespace Balloon.Engine {
         public ModelVisual3D            JointObjects { get; set; }
         public Transform3DGroup         WorldTransforms { get; set; }
 
-        private TranslateTransform3D    FloorTransform { get; set; }
-        private RotateTransform3D       AngleRotationTransform { get; set; }
+        public TranslateTransform3D     FloorTransform { get; private set; }
+        public RotateTransform3D        AngleRotationTransform { get; private set; }
 
         public World() {
             // instantiate our world

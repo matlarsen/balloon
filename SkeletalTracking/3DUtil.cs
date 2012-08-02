@@ -61,12 +61,36 @@ namespace Balloon.Engine {
             return new Vector3D(direction.X, direction.Y, direction.Z);
         }
 
+
+        /// <summary>
+        /// Calculate the distance between these 2 points
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public static double DistanceBetween(Point3D a, Point3D b) {
+            Point3D direction = new Point3D();
+            direction.X = b.X - a.X;
+            direction.Y = b.Y - a.Y;
+            direction.Z = b.Z - a.Z;
+
+            return Math.Sqrt(direction.X * direction.X +
+                             direction.Y * direction.Y +
+                             direction.Z * direction.Z);
+        }
+
+
         public static Vector3D VectorFromPointAToB(Point3D to, Point3D from) {
             Vector3D direction = new Vector3D();
             direction.X = from.X - to.X;
             direction.Y = from.Y - to.Y;
             direction.Z = from.Z - to.Z;
             return direction;
+        }
+
+
+        public static Point3D Midpoint(Point3D a, Point3D b) {
+            return new Point3D((b.X + a.X) / 2.0, (b.Y + a.Y) / 2.0, (b.Z + a.Z) / 2.0);
         }
     }
 }

@@ -25,8 +25,7 @@ namespace Balloon {
 
         // on window closing, stop the kinect, kill the interface
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
-            App.Engine.StopKinect();
-            App.Interface.Close();
+            App.Terminate();
         }
 
         // what to do when the state of the kinect changes

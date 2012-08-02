@@ -10,23 +10,10 @@ namespace Balloon {
         public Point3D          Center { get; private set; }
         public double           Radius { get; private set; }
         public Action           Action { get; set; }
-        public Rect3D           Rect3D { get; private set; }
         public Material         Material { get; private set; }
         public ModelVisual3D    ModelVisual3D { get; private set; }
         public bool             Notified { get; private set; }
-
-        private Color           color = _Constants.DefaultCubeColour;
-        private SolidColorBrush SolidColorBrush { get; set; }
-        public Color            Color {
-            get {
-                return color;
-            }
-
-            set {
-                color = value;
-                SolidColorBrush.Color = color;
-            }
-        }
+        public SolidColorBrush  SolidColorBrush { get; set; }
 
         public Cube(Point3D center, double radius, Action action) {
             Center = center;
@@ -35,14 +22,12 @@ namespace Balloon {
             Notified = false;
             SolidColorBrush = new SolidColorBrush();
             SolidColorBrush.Opacity = _Constants.BaseOpacity;
+            SolidColorBrush.Color = _Constants.DefaultCubeColour;
             Material = new DiffuseMaterial(SolidColorBrush);
-            Color = _Constants.DefaultCubeColour;
-
             MeshBuilder meshBuilder = new MeshBuilder();
             meshBuilder.AddBox(center, radius, radius, radius);
 
             ModelVisual3D = Engine._3DUtil.WrapMeshAndMaterialIntoModelVisual3D(meshBuilder.ToMesh(), Material);
-            Rect3D = ModelVisual3D.Content.Bounds;
         }
 
         /// <summary>
@@ -53,7 +38,21 @@ namespace Balloon {
             Center = point;
             GeometryModel3D g = (GeometryModel3D)ModelVisual3D.Content;
             MeshGeometry3D m = (MeshGeometry3D)g.Geometry;
-            m.Positions = Engine._3DUtil.GetPoint3DCollectionFromCenterAndRadius(point, Radius);
+
+            MeshBuilder meshBuilder = new MeshBuilder();
+            meshBuilder.AddBox(Center, Radius, Radius, Radius);
+            m.Positions = meshBuilder.Positions;
+        }
+
+        /// <summary>
+        /// Resizes the cube
+        /// </summary>
+        /// <param name="radius"></param>
+        /// <param name="resizeGeometryAsWell">By default it won't resize the 3D geometry, this forces it to</param>
+        public void Resize(double radius, bool resizeGeometryAsWell = false) {
+            Radius = radius;
+            if (resizeGeometryAsWell)
+                MoveTo(Center);
         }
 
         // when the point goes in bounds do something

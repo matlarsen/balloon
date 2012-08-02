@@ -1,0 +1,106 @@
+﻿<Window x:Class="Balloon.MusicCubeCreator"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Musical Cubes Creator" Width="280" Icon="/Balloon;component/icons/music_2.ico">
+    <Window.Resources>
+        <Style BasedOn="{StaticResource {x:Type ToggleButton}}" TargetType="RadioButton">
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Padding" Value="5"/>
+        </Style>
+        <Style TargetType="WrapPanel">
+            <Setter Property="HorizontalAlignment" Value="Center" />
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Label Grid.Row="0" Content="Cube Type" FontSize="15" />
+        <WrapPanel Grid.Row="0" Margin="0,25,0,0">
+            <RadioButton Content="Note"  Name="Note" GroupName="CubeTypeSelector" IsChecked="True" />
+            <RadioButton Content="Chord" Name="Chord2" GroupName="CubeTypeSelector" />
+            <RadioButton Content="Arpeggio" GroupName="CubeTypeSelector" />
+            <RadioButton Content="Scale" GroupName="CubeTypeSelector" />
+            <RadioButton Content="Pitch Bend" GroupName="CubeTypeSelector" />
+            <RadioButton Content="Modulation" GroupName="CubeTypeSelector" />
+            <RadioButton Content="Volume" GroupName="CubeTypeSelector" />
+        </WrapPanel>
+        <Label Grid.Row="1" Content="Note and Scale" FontSize="15" />
+        <WrapPanel Grid.Row="1" Margin="0,25,0,0">
+            <WrapPanel>
+                <Label Content="Note:"/>
+                <ComboBox Name="cmbNote">
+                    <ComboBoxItem Content="A" />
+                    <ComboBoxItem Content="Bb" />
+                    <ComboBoxItem Content="B" />
+                    <ComboBoxItem Content="C" IsSelected="True" />
+                    <ComboBoxItem Content="Db" />
+                    <ComboBoxItem Content="D" />
+                    <ComboBoxItem Content="Eb" />
+                    <ComboBoxItem Content="E" />
+                    <ComboBoxItem Content="F" />
+                    <ComboBoxItem Content="Gb" />
+                    <ComboBoxItem Content="G" />
+                    <ComboBoxItem Content="Ab" />
+                </ComboBox>
+            </WrapPanel>
+            <WrapPanel>
+                <Label Content="Octave:"/>
+                <ComboBox Name="cmbOctave">
+                    <ComboBoxItem Content="1" />
+                    <ComboBoxItem Content="2" />
+                    <ComboBoxItem Content="3" />
+                    <ComboBoxItem Content="4" IsSelected="True" />
+                    <ComboBoxItem Content="5" />
+                    <ComboBoxItem Content="6" />
+                    <ComboBoxItem Content="7" />
+                    <ComboBoxItem Content="8" />
+                    <ComboBoxItem Content="9" />
+                </ComboBox>
+            </WrapPanel>
+            <WrapPanel>
+                <Label Content="Scale:"/>
+                <ComboBox Name="cmbScale">
+                    <ComboBoxItem Content="Major" IsSelected="True" />
+                    <ComboBoxItem Content="HarmonicMinor" />
+                    <ComboBoxItem Content="NaturalMinor" />
+                    <ComboBoxItem Content="MelodicMinorAscending" />
+                    <ComboBoxItem Content="MelodicMinorDescending" />
+                    <ComboBoxItem Content="Chromatic" />
+                </ComboBox>
+            </WrapPanel>
+            <WrapPanel>
+                <Label Content="Chord Type:"/>
+                <ComboBox Name="cmbChordType">
+                    <ComboBoxItem Content="Major" IsSelected="True" />
+                    <ComboBoxItem Content="Minor" />
+                    <ComboBoxItem Content="Seventh" />
+                    <ComboBoxItem Content="Augmented" />
+                    <ComboBoxItem Content="Diminished" />
+                </ComboBox>
+            </WrapPanel>
+            <WrapPanel>
+                <Label Content="Chord Inversion:"/>
+                <ComboBox Name="cmbInversion">
+                    <ComboBoxItem Content="0" IsSelected="True" />
+                    <ComboBoxItem Content="1" />
+                    <ComboBoxItem Content="2" />
+                    <ComboBoxItem Content="3" />
+                    <ComboBoxItem Content="4" />
+                </ComboBox>
+            </WrapPanel>
+        </WrapPanel>
+        <Label Grid.Row="2" Content="Instrument" FontSize="15" />
+        <StackPanel Grid.Row="2" Margin="0,25,0,0">
+            <ListBox Name="lstActiveInstruments" Height="200"/>
+            <WrapPanel>
+                <ComboBox Name="cmbInstruments"/>
+                <Button Content="Set" Name="btnSetInstrument" Click="btnSetInstrument_Click" />
+            </WrapPanel>
+        </StackPanel>
+        <Button Grid.Row="3" Content="Create" Padding="10" Margin="10" FontSize="18" FontWeight="Bold" Name="btnCreate" Click="btnCreate_Click" />
+    </Grid>
+</Window>

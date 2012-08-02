@@ -47,3 +47,5 @@ C:\Users\Badger\repos\balloon\SkeletalTracking\obj\x86\Debug\GenerateResource.wr
 C:\Users\Badger\repos\balloon\SkeletalTracking\bin\Debug\HelixToolkit.Wpf.dll
 C:\Users\Badger\repos\balloon\SkeletalTracking\bin\Debug\HelixToolkit.Wpf.pdb
 C:\Users\Badger\repos\balloon\SkeletalTracking\bin\Debug\HelixToolkit.Wpf.xml
+C:\Users\Badger\repos\balloon\SkeletalTracking\obj\x86\Debug\MusicCubeCreator.baml
+C:\Users\Badger\repos\balloon\SkeletalTracking\obj\x86\Debug\MusicCubeCreator.g.cs

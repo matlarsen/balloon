@@ -14,15 +14,13 @@ namespace Balloon.fun {
         /// Just generate a cloud of points within the given sphere
         /// </summary>
         /// <param name="engine"></param>
-        public static void GenerateAFuckTonneOfCubes(Engine.Engine engine, Note scaleNote, int numberOfCubes, Point3D point, double radius, double cubeRadius) {
+        public static void GenerateAFuckTonneOfCubes(Engine.Engine engine, ChannelAndInstrument ci, Note scaleNote, int numberOfCubes, Point3D point, double radius, double cubeRadius) {
             Scale scale = new Scale(scaleNote, Scale.Major);
             Random random = new Random();
             OutputDevice device = OutputDevice.InstalledDevices[0];
-            Channel channel = Channel.Channel1;
-            Instrument instrument = Instrument.Pad1NewAge;
+            Channel channel = ci.Channel;
+            Instrument instrument = ci.Instrument;
             int rootOctave = 3;
-            
-            device.SendProgramChange(channel, instrument);
 
             int thisOctave = rootOctave;
             for (int i = 0; i < numberOfCubes; i++) {
@@ -43,7 +41,7 @@ namespace Balloon.fun {
                 if (i % 7 == 0)
                     thisOctave++;
 
-                SingleNoteCube a = new Cubes.SingleNoteCube(cubePoint, cubeRadius, thisPitch, instrument, device, channel);
+                SingleNoteCube a = new Cubes.SingleNoteCube(cubePoint, cubeRadius, thisPitch, instrument, App.OutputDevice, channel);
 
                 engine.AddCube(a);
             }

@@ -54,6 +54,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -71,7 +72,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="controlstates\IState.cs" />
+    <Compile Include="actions\InstrumentChordAction.cs" />
+    <Compile Include="cubes\ChordCube.cs" />
     <Compile Include="IAnalogCube.cs" />
     <Page Include="Interface.xaml">
       <SubType>Designer</SubType>
@@ -101,9 +103,16 @@
     <Compile Include="KinectChooser.xaml.cs">
       <DependentUpon>KinectChooser.xaml</DependentUpon>
     </Compile>
+    <Page Include="MusicCubeCreator.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Math.cs" />
+    <Compile Include="MusicCubeCreator.xaml.cs">
+      <DependentUpon>MusicCubeCreator.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -140,6 +149,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="icons\kinect.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="icons\music_2.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

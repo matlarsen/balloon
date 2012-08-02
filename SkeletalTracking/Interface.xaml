@@ -2,7 +2,19 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:helix="clr-namespace:HelixToolkit.Wpf;assembly=HelixToolkit.Wpf"
-        Title="Balloon World" Height="450" Width="800" WindowState="Normal" WindowStyle="SingleBorderWindow" Topmost="False" Icon="/Balloon;component/icons/balloon.ico">
-    <Viewbox Name="viewbox">
-    </Viewbox>
+        Title="Balloon World" Height="490" Width="800" WindowState="Normal" WindowStyle="SingleBorderWindow" Topmost="False" Icon="/Balloon;component/icons/balloon.ico" Closing="Window_Closing">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Menu Grid.Row="0">
+            <MenuItem Header="_File">
+                <MenuItem Command="Close"/>
+            </MenuItem>
+            <MenuItem Header="_Music Cubes" Click="MenuItem_MusicCubes_Click" />
+        </Menu>
+        <Viewbox Name="viewbox" Grid.Row="1" />
+    </Grid>
+    
 </Window>

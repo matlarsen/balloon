@@ -8,6 +8,6 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("kinect.ico")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("icons/music_2.ico")]
 
 
