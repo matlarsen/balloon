@@ -261,8 +261,14 @@ namespace Balloon.Engine {
                                                 AnalogueCube analogueCube = cube as AnalogueCube;
                                                 if (analogueCube != null) {
                                                     // if its an analogue cube we have to always notify with the
-                                                    // reletave x position
-                                                    ((AnalogueCube)cube).NotifyAnalogue(_3DUtil.UnitDirectionVectorFromPointAToB(cube.ModelVisual3D.Content.Bounds.Location, jointLocation));
+                                                    // relative x position
+                                                    Rect3D cubeRect = cube.ModelVisual3D.Content.Bounds;
+                                                    Point3D cubeCenter = new Point3D(
+                                                        cubeRect.X + cubeRect.SizeX / 2d,
+                                                        cubeRect.Y + cubeRect.SizeY / 2d,
+                                                        cubeRect.Z + cubeRect.SizeZ / 2d
+                                                    );
+                                                    ((AnalogueCube)cube).NotifyAnalogue(_3DUtil.UnitDirectionVectorFromPointAToB(cubeCenter, jointLocation));
                                                 }
                                             }
                                         }
@@ -331,7 +337,7 @@ namespace Balloon.Engine {
                                         // move and resize the cube we are creating relative to the hands
                                         Point3D cubeCenter = _3DUtil.Midpoint(leftHandPoint, rightHandPoint);
                                         cubeCenter.Y += World.FloorHeight;
-                                        createCube.Resize(_3DUtil.DistanceBetween(leftHandPoint, rightHandPoint) / 2.0);
+                                        createCube.Resize(_3DUtil.DistanceBetween(leftHandPoint, rightHandPoint));
                                         createCube.MoveTo(cubeCenter);
 
                                         // step 3
@@ -417,8 +423,10 @@ namespace Balloon.Engine {
                     cubes.Clear();
                 }
                 // kill from our view
-                if (Joint3DGeometry.Keys.Contains(skeleton.TrackingId))
+                if (Joint3DGeometry.Keys.Contains(skeleton.TrackingId)) {
                     World.JointObjects.Children.Remove(Joint3DGeometry[skeleton.TrackingId][jointType]);
+                    Joint3DGeometry[skeleton.TrackingId].Remove(jointType);
+                }
             }
             
             // and then we need to deinitialise that jointType array

@@ -48,22 +48,11 @@ namespace Balloon {
                 ChannelsAndInstruments.Add(new ChannelAndInstrument() { Channel = channel, Instrument = Instrument.AcousticGrandPiano });
                 OutputDevice.SendProgramChange(channel, ChannelsAndInstruments[0].Instrument);
             }
-            
 
 
-
-            // create our test cubes
-            List<Cube> cubes = new List<Cube>();
-
-            //Cube PitchBendTest = new Cubes.YPitchBendCube(new System.Windows.Media.Media3D.Point3D(0.5, 0, 1.2), 0.4, Pitch.G4, ChannelsAndInstruments[0].Instrument, App.OutputDevice, ChannelsAndInstruments[0].Channel);
-            //PitchBendTest.Color = System.Windows.Media.Colors.Gold;
-            //cubes.Add(PitchBendTest);
-            //Engine.SetCreateCube(PitchBendTest);
-
-            foreach (Cube cube in cubes)
-                Engine.AddCube(cube);
-            
-            
+            // create our test cube
+            Cube PitchBendTest = new Cubes.YPitchBendCube(new System.Windows.Media.Media3D.Point3D(0, 0, 0), 0, Pitch.G4, ChannelsAndInstruments[0].Instrument, App.OutputDevice, ChannelsAndInstruments[0].Channel);
+            Engine.SetCreateCube(PitchBendTest);
         }
 
         /// <summary>
