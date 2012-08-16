@@ -19,8 +19,8 @@ namespace Balloon {
 
         App() {
             // create a balloon engine and get it going
-            Interface = new Interface();
             Engine = new Balloon.Engine.Engine();
+            Interface = new Interface();
             Interface.viewbox.Child = Engine.Viewport3D;
 
             // set the floor
@@ -36,6 +36,7 @@ namespace Balloon {
             // track hands for now
             Engine.TrackJoint(Microsoft.Kinect.JointType.HandLeft);
             Engine.TrackJoint(Microsoft.Kinect.JointType.HandRight);
+            Engine.TrackJoint(Microsoft.Kinect.JointType.FootLeft);
 
             // ok, initialise our midi stuff
             OutputDevice = OutputDevice.InstalledDevices[0];
@@ -45,7 +46,7 @@ namespace Balloon {
             Array channels = Enum.GetValues(typeof(Channel));
             foreach (Channel channel in channels) {
                 ChannelsAndInstruments.Add(new ChannelAndInstrument() { Channel = channel, Instrument = Instrument.AcousticGrandPiano });
-                OutputDevice.SendProgramChange(ChannelsAndInstruments[0].Channel, ChannelsAndInstruments[0].Instrument);
+                OutputDevice.SendProgramChange(channel, ChannelsAndInstruments[0].Instrument);
             }
             
 
@@ -54,13 +55,10 @@ namespace Balloon {
             // create our test cubes
             List<Cube> cubes = new List<Cube>();
 
-            /*Cube PitchBendTest = new Cubes.YPitchBendCube(new System.Windows.Media.Media3D.Point3D(0.5, 0, 1.2), 0.4, Pitch.G4, instrument, device, channel) {
-                //Color = System.Windows.Media.Colors.Gold
-            };
-            PitchBendTest.Color = System.Windows.Media.Colors.Gold;
-            cubes.Add(PitchBendTest);*/
-
-            //fun.Fun.GenerateAFuckTonneOfCubes(Engine, ChannelsAndInstruments[0], new Note("C"), 200, new Point3D(0, 0.5, 1.5), 1.1, 0.2);
+            //Cube PitchBendTest = new Cubes.YPitchBendCube(new System.Windows.Media.Media3D.Point3D(0.5, 0, 1.2), 0.4, Pitch.G4, ChannelsAndInstruments[0].Instrument, App.OutputDevice, ChannelsAndInstruments[0].Channel);
+            //PitchBendTest.Color = System.Windows.Media.Colors.Gold;
+            //cubes.Add(PitchBendTest);
+            //Engine.SetCreateCube(PitchBendTest);
 
             foreach (Cube cube in cubes)
                 Engine.AddCube(cube);

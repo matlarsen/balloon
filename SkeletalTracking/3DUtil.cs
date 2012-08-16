@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Media.Media3D;
 using System.Windows.Media;
+using Microsoft.Kinect;
 
 namespace Balloon.Engine {
     public static class _3DUtil {
@@ -91,6 +92,10 @@ namespace Balloon.Engine {
 
         public static Point3D Midpoint(Point3D a, Point3D b) {
             return new Point3D((b.X + a.X) / 2.0, (b.Y + a.Y) / 2.0, (b.Z + a.Z) / 2.0);
+        }
+
+        public static Point3D Joint3DGeometryToPoint3D(SkeletonPoint skeletonPoint) {
+            return new Point3D(skeletonPoint.X, skeletonPoint.Y, skeletonPoint.Z);
         }
     }
 }

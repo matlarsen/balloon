@@ -89,6 +89,7 @@
                     <ComboBoxItem Content="1" />
                     <ComboBoxItem Content="2" />
                     <ComboBoxItem Content="3" />
+                    
                     <ComboBoxItem Content="4" />
                 </ComboBox>
             </WrapPanel>
@@ -101,6 +102,9 @@
                 <Button Content="Set" Name="btnSetInstrument" Click="btnSetInstrument_Click" />
             </WrapPanel>
         </StackPanel>
-        <Button Grid.Row="3" Content="Create" Padding="10" Margin="10" FontSize="18" FontWeight="Bold" Name="btnCreate" Click="btnCreate_Click" />
+        <StackPanel Grid.Row="3" HorizontalAlignment="Center">
+            <CheckBox Name="chkScaleMode" Content="Scale mode"/>
+            <Button Content="Create" Padding="10" Margin="10" FontSize="18" FontWeight="Bold" Name="btnCreate" Click="btnCreate_Click" />
+        </StackPanel>
     </Grid>
 </Window>

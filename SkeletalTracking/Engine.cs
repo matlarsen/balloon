@@ -29,7 +29,16 @@ namespace Balloon.Engine {
         public Skeleton[]                Skeletons { get; private set; }
         public HelixViewport3D           Viewport3D { get; private set; }
         public World                     World { get; private set; }
-        public EngineMode                Mode { get; set; }
+        public EngineMode                Mode { get { return mode; } set { mode = value; OnEngineModeChanged(new EngineModeChangedEventArgs(mode)); } }
+        private EngineMode mode;
+
+
+        // events
+        public delegate void EngineModeChangedHandler(object sender, EngineModeChangedEventArgs e);
+        public delegate void EngineCubeCreatedHandler(object sender, EngineCubeCreatedEventArgs e);
+        public event EngineModeChangedHandler EngineModeChanged;
+        public event EngineCubeCreatedHandler EngineCubeCreated;
+
 
         // internal workings of the engine
         private List<Cube>                                           Cubes { get; set; }
@@ -42,7 +51,6 @@ namespace Balloon.Engine {
 
         // create mode
         private Cube createCube;
-        private bool handsTogether = false;
         private long stableTime;
         private Point3D previousPoint;
 
@@ -50,14 +58,11 @@ namespace Balloon.Engine {
         /// Constructs an engine that tracks the first skeletons' arms with the default transform settings
         /// </summary>
         public Engine() {
-            
-
             // Initialise objects
             DenotifyQueue = new Dictionary<int, Dictionary<JointType, List<Cube>>>();
             JointsToTrack = new List<JointType>();
             Cubes = new List<Cube>();
             Joint3DGeometry = new Dictionary<int, Dictionary<JointType, CubeVisual3D>>();
-            Mode = EngineMode.NormalInteractive;
 
             // setup our viewport
             Viewport3D = new HelixViewport3D() {
@@ -68,16 +73,15 @@ namespace Balloon.Engine {
                 ShowFieldOfView = true,
                 ShowFrameRate = true,
                 CameraRotationMode = CameraRotationMode.Trackball,
-                MinHeight = 450,
+                MinHeight = 400,
                 MinWidth = 800,
                 TouchMode = TouchMode.Rotating,
                 RotateAroundMouseDownPoint = true,
-                Camera = new OrthographicCamera() {
-                    //Position = new Point3D(11, 8, -5),
-                    //LookDirection = new Vector3D(-6.7, -4.7, 5)
+                Camera = new PerspectiveCamera() {
                     Position = new Point3D(18.5, 13.5, -12.2),
                     LookDirection = new Vector3D(-14.9, -10.4, 11.1),
-                    Width = 5.5
+                    FieldOfView = 57
+                    //Width = 5.5
                 },
             };
             Viewport3D.Lights.Children.Add(new DirectionalLight(Colors.White, new Vector3D(0.5, -0.5, 0.5)));
@@ -94,6 +98,9 @@ namespace Balloon.Engine {
 
             // set the default kinect settings
             SmoothParameters = _Constants.SmoothParameters;
+
+            // fire off the engine mode event
+            Mode = EngineMode.NormalInteractive;
         }
 
         /// <summary>
@@ -134,7 +141,6 @@ namespace Balloon.Engine {
                 )
                 return;                     // get the fuck outta here
 
-
             // bring in our skeletons
             Skeletons = new Skeleton[skeletonFrame.SkeletonArrayLength];
             skeletonFrame.CopySkeletonDataTo(Skeletons);
@@ -151,6 +157,11 @@ namespace Balloon.Engine {
             if (currentFloorStabilisationAngleIndex == _Constants.FloorStabilisationSamples) {
                 World.SetKinectAngle((float)_Math.GetMedian(floorStabilisationAngles));
                 currentFloorStabilisationAngleIndex = 0;
+
+                // adjust the camera view so it shows out from the kinect
+                Viewport3D.Camera.Position = World.Kinect.Center;
+                Viewport3D.Camera.LookDirection = new Vector3D(0, 0, 1);
+                Viewport3D.Camera.Transform = World.FloorTransform;
             }
 
 
@@ -185,6 +196,7 @@ namespace Balloon.Engine {
                 // first thing we need to do is register our skeletons & joints
                 // and sort out their reference 3d geometry
                 // for each skeleton
+                bool firstSkeleton = true;
                 foreach (Skeleton skeleton in Skeletons) {
 
                     // only track full skeletons that we can find (will be 2 - all the API supports)
@@ -205,7 +217,7 @@ namespace Balloon.Engine {
                             if (skeleton.Joints[jointType].TrackingState != JointTrackingState.NotTracked) {
 
                                 // transform the location of this joint to something more useful
-                                Point3D jointLocation = new Point3D(skeleton.Joints[jointType].Position.X, skeleton.Joints[jointType].Position.Y, skeleton.Joints[jointType].Position.Z);
+                                Point3D jointLocation = _3DUtil.Joint3DGeometryToPoint3D(skeleton.Joints[jointType].Position);
                                 jointLocation.X = -jointLocation.X;
 
                                 // initialise in our denotify queue
@@ -277,29 +289,45 @@ namespace Balloon.Engine {
                         // so now we need to do our CRMD operations
                         // notification of cubes was already disabled if we are in one of these modes (not the interactivenormal mode)
                         // first of all, make sure our pre-requisites are in place
-                        if (JointsToTrack.Contains(JointType.HandLeft) && JointsToTrack.Contains(JointType.HandRight)
-                            && Skeletons.Length > 0) {
-
-                            // what mode are we in
-                            switch (Mode) {
-
-                                // Create mode - we are making a coooob!
-                                case EngineMode.CreateCube:
-                                    Point3D leftHandPoint = Joint3DGeometry[skeleton.TrackingId][JointType.HandLeft].Center;
-                                    Point3D rightHandPoint = Joint3DGeometry[skeleton.TrackingId][JointType.HandRight].Center;
-
-                                    // ok well this depends on what stage of the process we are in
-
-                                    // step 1
-                                    // wait until the hands are within distance of each other
-                                    if (!handsTogether) {
-                                        if (_3DUtil.DistanceBetween(leftHandPoint, rightHandPoint) <= _Constants.CreateHandDistance) {
-                                            handsTogether = true;
-                                            Debug.WriteLine("Hands are together");
-                                        }
+                        // we also only want to do it for the first skeleton
+                        if (firstSkeleton) {
+                            if (JointsToTrack.Contains(JointType.HandLeft) && JointsToTrack.Contains(JointType.HandRight)
+                                && Skeletons.Length > 0) {
+                                Point3D leftHandPoint = Joint3DGeometry[skeleton.TrackingId][JointType.HandLeft].Center;
+                                Point3D rightHandPoint = Joint3DGeometry[skeleton.TrackingId][JointType.HandRight].Center;
+                                Point3D skeletonSpineMidpoint = _3DUtil.Midpoint(
+                                    _3DUtil.Joint3DGeometryToPoint3D(skeleton.Joints[JointType.ShoulderCenter].Position),
+                                    _3DUtil.Joint3DGeometryToPoint3D(skeleton.Joints[JointType.HipCenter].Position)
+                                    );
+                                
+                                // check to see whether we should be put into create mode
+                                // wait until the hands are crossed for the set period of time
+                                if (Mode == EngineMode.NormalInteractive && 
+                                    leftHandPoint.X > rightHandPoint.X)
+                                    stableTime = DateTime.Now.Ticks;
+                                else if ((DateTime.Now.Ticks - stableTime) / TimeSpan.TicksPerMillisecond >= _Constants.CreateStableTimout) {
+                                    if (createCube != null) {
+                                        Mode = EngineMode.CreateCube;
+                                        Debug.WriteLine("Hands are crossed");
                                     }
-                                    else {
-                                        // step 2
+                                }
+                                // --old mode
+                                // check to see whether we should be put into create mode
+                                // wait until the hands are together for the set period of time
+                                /*if (Mode == EngineMode.NormalInteractive && _3DUtil.DistanceBetween(leftHandPoint, rightHandPoint) > _Constants.CreateHandDistance * 2.0)
+                                    stableTime = DateTime.Now.Ticks;
+                                else if ((DateTime.Now.Ticks - stableTime) / TimeSpan.TicksPerMillisecond >= _Constants.CreateStableTimout) {
+                                    if (createCube != null) {
+                                        Mode = EngineMode.CreateCube;
+                                        Debug.WriteLine("Hands are together");
+                                    }
+                                }*/
+                                
+
+
+                                // now, what we want to do depends on what mode we are in!
+                                switch (Mode) {
+                                    case EngineMode.CreateCube:
                                         // move and resize the cube we are creating relative to the hands
                                         Point3D cubeCenter = _3DUtil.Midpoint(leftHandPoint, rightHandPoint);
                                         cubeCenter.Y += World.FloorHeight;
@@ -310,10 +338,9 @@ namespace Balloon.Engine {
                                         // we need to materialise the cube and get out of this process
                                         // we do this through a timeout 
                                         // or TODO: A signal
-                                        
+
                                         // reset the counter if we fall outside the deadzone
                                         if (previousPoint == null || _3DUtil.DistanceBetween(previousPoint, cubeCenter) > _Constants.CreateStableDeadzone) {
-                                            Debug.WriteLine("resetting create counter");
                                             previousPoint = cubeCenter;
                                             stableTime = DateTime.Now.Ticks;
                                         }
@@ -322,22 +349,21 @@ namespace Balloon.Engine {
                                             long currentTime = DateTime.Now.Ticks;
                                             if ((currentTime - stableTime) / TimeSpan.TicksPerMillisecond >= _Constants.CreateStableTimout) {
                                                 Debug.WriteLine("timeout, cube is materialised");
+                                                OnEngineCubeCreated(new EngineCubeCreatedEventArgs(createCube));
                                                 Mode = EngineMode.NormalInteractive;
                                             }
                                         }
-                                    }
-                                    break;
-                                case EngineMode.DeleteCube:
+                                        break;
+                                    case EngineMode.DeleteCube:
 
-                                    break;
-                                case EngineMode.MoveCube:
+                                        break;
+                                    case EngineMode.MoveCube:
 
-                                    break;
+                                        break;
+                                }
                             }
-
+                            firstSkeleton = false;
                         }
-
-
                     }
                 }
             }
@@ -349,22 +375,13 @@ namespace Balloon.Engine {
 
 
         /// <summary>
-        /// Sets the engine to create mode for the specified cube
+        /// Sets the cube object to be created in the engine
         /// </summary>
         /// <param name="cubeToCreate"></param>
-        public void EnterCreateCubeMode(Cube cubeToCreate) {
-            // put the engine in create mode
-            Mode = EngineMode.CreateCube;
-            handsTogether = false;
-
+        public void SetCreateCube(Cube cubeToCreate) {
             // assign the local create cube object
             createCube = cubeToCreate;
-
-            // add to our world; make sure it has the same transform as joints though
-            //createCube.ModelVisual3D.Transform = World.FloorTransform;
             AddCube(createCube);
-            
-            Debug.WriteLine("entered create mode");
         }
 
 
@@ -392,10 +409,27 @@ namespace Balloon.Engine {
         /// <param name="jointType"></param>
         public void StopTrackingJoint(JointType jointType) {
             // we need to denotify any cube registered to this jointType
-
+            foreach (Skeleton skeleton in Skeletons) {
+                if (DenotifyQueue.Keys.Contains(skeleton.TrackingId)) {
+                    List<Cube> cubes = DenotifyQueue[skeleton.TrackingId][jointType];
+                    foreach (Cube cube in cubes)
+                        cube.DeNotify();
+                    cubes.Clear();
+                }
+                // kill from our view
+                if (Joint3DGeometry.Keys.Contains(skeleton.TrackingId))
+                    World.JointObjects.Children.Remove(Joint3DGeometry[skeleton.TrackingId][jointType]);
+            }
+            
             // and then we need to deinitialise that jointType array
-
-            throw new NotImplementedException();
+            JointsToTrack.Remove(jointType);
+        }
+        /// <summary>
+        /// Stop tracking all joints
+        /// </summary>
+        public void StopTrackingAllJoints() {
+            while (JointsToTrack.Count > 0)
+                StopTrackingJoint(JointsToTrack[0]);
         }
 
         /// <summary>
@@ -414,10 +448,27 @@ namespace Balloon.Engine {
         /// </summary>
         /// <param name="cube"></param>
         public void RemoveCube(Cube cube) {
-            // remove from the denotify queue
+            // denotify and remove from the denotify queue
+            cube.DeNotify();
+            foreach (Skeleton skeleton in Skeletons)
+                foreach (JointType jointType in JointsToTrack)
+                    if (DenotifyQueue.ContainsKey(skeleton.TrackingId) && DenotifyQueue[skeleton.TrackingId].ContainsKey(jointType))
+                        if (DenotifyQueue[skeleton.TrackingId][jointType].Contains(cube))
+                            DenotifyQueue[skeleton.TrackingId][jointType].Remove(cube);
+
+            // kill from our view
+            World.Cubes.Children.Remove(cube.ModelVisual3D);
 
             // remove from the cube list
-            throw new NotImplementedException();
+            Cubes.Remove(cube);
+        }
+        /// <summary>
+        /// Removes all the cubes from tracking
+        /// </summary>
+        public void RemoveAllCubes() {
+            while (Cubes.Count > 0)
+                RemoveCube(Cubes[0]);
+            World.Cubes.Children.Clear();
         }
 
         /// <summary>
@@ -466,6 +517,18 @@ namespace Balloon.Engine {
                 if (Kinect.AudioSource != null)
                     Kinect.AudioSource.Stop();
             }
+        }
+
+        // safe function for firing engine mode changes
+        protected virtual void OnEngineModeChanged(EngineModeChangedEventArgs e) {
+            if (EngineModeChanged != null)
+                EngineModeChanged(this, e);
+        }
+
+        // safe function for when a cube is created
+        protected virtual void OnEngineCubeCreated(EngineCubeCreatedEventArgs e) {
+            if (EngineCubeCreated != null)
+                EngineCubeCreated(this, e);
         }
     }
 
@@ -556,6 +619,21 @@ namespace Balloon.Engine {
         }
     }
 
+    // event args
+    public class EngineModeChangedEventArgs : EventArgs {
+        public EngineMode Mode { get; private set; }
+        public EngineModeChangedEventArgs(EngineMode s) {
+            Mode = s;
+        }
+    }
+    public class EngineCubeCreatedEventArgs : EventArgs {
+        public Cube Cube { get; private set; }
+        public EngineCubeCreatedEventArgs(Cube s) {
+            Cube = s;
+        }
+    }
+
+    // exceptions
     public class BalloonEngineException : Exception {}
     public class NoKinectException : BalloonEngineException {}
 }

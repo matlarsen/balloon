@@ -25,6 +25,7 @@ namespace Balloon {
         Channel     CurrentChannel { get; set; }
         Type        CurrentCubeType { get; set; }
 
+        int currentScaleNoteIndex = 0;
 
         /// <summary>
         /// Enumerate all our shizzle
@@ -47,6 +48,9 @@ namespace Balloon {
                         Content = String.Format("{0}: {1}", ci.Channel, ci.Instrument)
                     });
             }
+
+            // we want to recreate a cube when the mode changes
+            App.Engine.EngineCubeCreated += new Engine.Engine.EngineCubeCreatedHandler(Engine_EngineCubeCreated);
 
             // UI tidy up
             ((ComboBoxItem)cmbInstruments.Items[0]).IsSelected = true;
@@ -100,7 +104,9 @@ namespace Balloon {
         }
 
         private void btnCreate_Click(object sender, RoutedEventArgs e) {
-            // if we are in create mode, come out of it
+            // scale mode?
+            if (!(bool)chkScaleMode.IsChecked)
+                currentScaleNoteIndex = 0;
 
             // otherwise, create a cube that matches the specifications we just set
             Cube cube = new NullCube(Engine.Engine.Origin, 0);
@@ -108,8 +114,18 @@ namespace Balloon {
             // yank values from comboboxes n shit
             Note note = new Note((string)((ComboBoxItem)cmbNote.SelectedItem).Content);
             int octave = int.Parse((string)((ComboBoxItem)cmbOctave.SelectedItem).Content);
-            Pitch pitch = note.PitchInOctave(octave);
+            
             ChordPattern chordPattern = Chord.Major;
+            ScalePattern scalePattern = Scale.Major;
+
+            switch ((string)((ComboBoxItem)cmbScale.SelectedItem).Content) {
+                case "Major": scalePattern = Scale.Major; break;
+                case "HarmonicMinor": scalePattern = Scale.HarmonicMinor; break;
+                case "MelodicMinorAscending": scalePattern = Scale.MelodicMinorAscending; break;
+                case "MelodicMinorDescending": scalePattern = Scale.MelodicMinorDescending; break;
+                case "NaturalMinor": scalePattern = Scale.NaturalMinor; break;
+            }
+            
             switch ((string)((ComboBoxItem)cmbChordType.SelectedItem).Content) {
                 case "Major": chordPattern = Chord.Major; break;
                 case "Minor": chordPattern = Chord.Minor; break;
@@ -117,6 +133,13 @@ namespace Balloon {
                 case "Augmented": chordPattern = Chord.Augmented; break;
                 case "Diminished": chordPattern = Chord.Diminished; break;
             }
+            Scale scale = new Scale(note, scalePattern);
+
+            // scalemode translation
+            note = scale.NoteSequence[currentScaleNoteIndex++ % 7];
+
+            Pitch pitch = note.PitchInOctave(octave);
+
             int chordInversion = int.Parse((string)((ComboBoxItem)cmbInversion.SelectedItem).Content);
             Chord chord = new Chord(note, chordPattern, chordInversion);
 
@@ -139,8 +162,12 @@ namespace Balloon {
             cube.SolidColorBrush.Color = randomColor;
 
             // now set the engine to create mode, and assign this as the cube to be created
-            App.Engine.EnterCreateCubeMode(cube);
+            App.Engine.SetCreateCube(cube);
+        }
 
+        // when the engine creates a new cube, reproduce another one
+        void Engine_EngineCubeCreated(object sender, Engine.EngineCubeCreatedEventArgs e) {
+            btnCreate_Click(null, null);
         }
     }
 }

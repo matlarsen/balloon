@@ -22,14 +22,14 @@ namespace Balloon {
         // Engine
         public const int        FloorStabilisationSamples = 50; // how many samples to be used when determining the floor / angle
         public static TransformSmoothParameters SmoothParameters = new TransformSmoothParameters {  // smoothing parameters for the kinect
-            Smoothing = 0.5f,
-            Correction = 0.5f,
-            Prediction = 0.5f,
-            JitterRadius = 0.05f,
-            MaxDeviationRadius = 0.04f
+            Smoothing = 0.2f,
+            Correction = 0.8f,
+            Prediction = 1.0f,
+            JitterRadius = 0.5f,
+            MaxDeviationRadius = 0.2f
         };
-        public const double     CreateHandDistance = 0.025; // how far apart do the hands have to be for create mode to start creating
-        public const int        CreateStableTimout = 3000;  // how long do the hands have to be stable before the created cube is materialised
-        public const double     CreateStableDeadzone = 0.03;    // deadzone (tolerance) movement of the hands for stabilisation
+        public const double     CreateHandDistance = 0.04; // how far apart do the hands have to be for create mode to start creating
+        public const int        CreateStableTimout = 2000;  // how long do the hands have to be stable before create mode activates / materialises the cube
+        public const double     CreateStableDeadzone = 0.05;    // deadzone (tolerance) movement of the hands for stabilisation
     }
 }
