@@ -9,11 +9,12 @@ namespace Balloon {
     public static class _Constants {
         // Cubes
         public const double     BaseOpacity = 0.3;  // opacity when a cube is not notified
-        public const double     InteractedOpacity = 1;  // opacity of a cube when it is notified
+        public const double     InteractedOpacity = 0.6;  // opacity of a cube when it is notified
         public static Color     DefaultCubeColour = Colors.Green;   // default colour to make a cube
 
         // Joints
         public static Brush     JointBrush = Brushes.LightGreen;    // colour of joint representation
+        public static Brush     JointCreateBrush = Brushes.RoyalBlue;   // colour to indicate a joint in create mode
         public const double     JointRadius = 0.025;    // size of joint representation
 
         // World

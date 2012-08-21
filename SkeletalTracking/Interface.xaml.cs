@@ -53,7 +53,7 @@ namespace Balloon {
             App.Engine.TrackJoint(Microsoft.Kinect.JointType.HandRight);
         }
 
-        private void MenuItem_Click(object sender, RoutedEventArgs e) {
+        private void MenuItem_Multicube_Click(object sender, RoutedEventArgs e) {
             App.ChannelsAndInstruments[0].Instrument = Instrument.Glockenspiel;
             App.OutputDevice.SendProgramChange(App.ChannelsAndInstruments[0].Channel, App.ChannelsAndInstruments[0].Instrument);
             fun.Fun.GenerateAFuckTonneOfCubes(App.Engine, App.ChannelsAndInstruments[0], new Note("C"), 500, new Point3D(0, 1, 2), 0.9, 0.1);
@@ -63,5 +63,12 @@ namespace Balloon {
             App.Engine.TrackJoint(Microsoft.Kinect.JointType.KneeLeft);
             App.Engine.TrackJoint(Microsoft.Kinect.JointType.KneeRight);
         }
+
+        private StemPlayer BonIverPlayer;
+        private void MenuItem_BonIver_Click(object sender, RoutedEventArgs e) {
+            BonIverPlayer = new StemPlayer(new BonIverStemPlayer(App.Engine));
+            BonIverPlayer.Show();
+        }
+
     }
 }

@@ -1,0 +1,8 @@
+*.wav
+*.exe
+.DS_Store
+.DS_Store?
+.Trashes
+Thumbs.db
+ehthumbs.db
+.Spotlight-V100

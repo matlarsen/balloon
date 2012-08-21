@@ -1,0 +1,12 @@
+﻿<Window x:Class="Balloon.StemPlayer"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="StemPlayer" Height="82" Width="222">
+    <Grid>
+        <WrapPanel HorizontalAlignment="Center" >
+            <Button Content="Play" FontSize="28" Click="Play_Button_Click" />
+            <Button Content="Pause" FontSize="28" Click="Pause_Button_Click"/>
+            <Button Content="Stop" FontSize="28" Click="Stop_Button_Click"/>
+        </WrapPanel>
+    </Grid>
+</Window>

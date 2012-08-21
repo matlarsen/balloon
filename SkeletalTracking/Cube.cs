@@ -57,15 +57,15 @@ namespace Balloon {
 
         // when the point goes in bounds do something
         public void Notify() {
-            Action.DoAction();
             Notified = true;
             SolidColorBrush.Opacity = _Constants.InteractedOpacity;
+            Action.DoAction();
         }
         // and when it goes out, stop it
         public void DeNotify() {
-            Action.StopAction();
             Notified = false;
             SolidColorBrush.Opacity = _Constants.BaseOpacity;
+            Action.StopAction();
         }
     }
 }

@@ -4,7 +4,7 @@
 library
 C#
 .cs
-C:\Users\Badger\repos\baloon\SkeletalTracking\lib\KinectWpfViewers\obj\Release\
+C:\Users\Badger\repos\balloon\SkeletalTracking\lib\KinectWpfViewers\obj\Release\
 Microsoft.Samples.Kinect.WpfViewers
 none
 false
@@ -13,7 +13,7 @@ TRACE
 7-1694449150
 
 13-826363229
-131892758216
+13320681003
 KinectSensorChooser.xaml;KinectAudioViewer.xaml;KinectDepthViewer.xaml;KinectColorViewer.xaml;KinectDiagnosticViewer.xaml;KinectSettings.xaml;KinectSkeletonViewer.xaml;
 
 False

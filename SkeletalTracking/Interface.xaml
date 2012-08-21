@@ -11,10 +11,9 @@
         <Menu Grid.Row="0" Height="30" FontSize="16" HorizontalAlignment="Center">
             <MenuItem Header="_Reset" FontWeight="Bold" Click="MenuItem_Reset_Click"/>
             <MenuItem Header="_Music Cubes" Click="MenuItem_MusicCubes_Click" />
-            <MenuItem Header="M_ulticube!" Click="MenuItem_Click" />
-            <MenuItem Header="_Loop Demo"/>
+            <MenuItem Header="M_ulticube!" Click="MenuItem_Multicube_Click" />
             <MenuItem Header="_Drum Sample Demo"/>
-            <MenuItem Header="_Stem Demo"/>
+            <MenuItem Header="_Bon Iver" Click="MenuItem_BonIver_Click"/>
         </Menu>
         <Viewbox Name="viewbox" Grid.Row="1" />
         <Label Name="lblEngineMode" Grid.Row="1" FontSize="32" />

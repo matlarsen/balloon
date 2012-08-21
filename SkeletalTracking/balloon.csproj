@@ -48,9 +48,13 @@
     <Reference Include="Microsoft.Expression.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Coding4Fun.Kinect.Wpf.1.5.0\lib\Microsoft.Expression.Drawing.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Kinect, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.Kinect, Version=1.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="Midi">
       <HintPath>..\..\..\Documents\midi-dot-net_1.1.0\midi-dot-net_1.1.0\Midi.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="NAudio">
+      <HintPath>..\packages\NAudio.1.5\lib\NAudio.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -73,8 +77,17 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="actions\InstrumentChordAction.cs" />
+    <Compile Include="actions\NullAction.cs" />
+    <Compile Include="actions\StemChannelMuteAction.cs" />
+    <Compile Include="BonIverStemPlayer.cs" />
     <Compile Include="cubes\ChordCube.cs" />
+    <Compile Include="cubes\StemMuteUnmuteCube.cs" />
+    <Compile Include="cubes\StemVolumePanCube.cs" />
     <Compile Include="IAnalogCube.cs" />
+    <Compile Include="IStemPlayer.cs" />
+    <Compile Include="StemPlayer.xaml.cs">
+      <DependentUpon>StemPlayer.xaml</DependentUpon>
+    </Compile>
     <Page Include="Interface.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -107,6 +120,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="StemPlayer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Math.cs" />
@@ -131,7 +148,9 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="app.config" />
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -152,6 +171,19 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="icons\music_2.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="boniver\bangorkook.wav" />
+    <None Include="boniver\chippewa_falls.wav" />
+    <None Include="boniver\eleva.wav" />
+    <None Include="boniver\gilman.wav" />
+    <None Include="boniver\grand_rapids.wav" />
+    <None Include="boniver\heigh_on.wav" />
+    <None Include="boniver\lake_hallie.wav" />
+    <None Include="boniver\le_grange_wi.wav" />
+    <None Include="boniver\long_plain.wav" />
+    <None Include="boniver\mandolin_wa.wav" />
+    <None Include="boniver\virginia.wav" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -94,7 +94,7 @@ namespace Balloon.Engine {
             Viewport3D.Children.Add(World.WorldObjects);
             Viewport3D.Children.Add(World.JointObjects);
             Viewport3D.Children.Add(World.Cubes);
-            Viewport3D.Children.Add(World.Kinect);
+            //Viewport3D.Children.Add(World.Kinect);
 
             // set the default kinect settings
             SmoothParameters = _Constants.SmoothParameters;
@@ -110,6 +110,10 @@ namespace Balloon.Engine {
         /// <param name="o"></param>
         /// <param name="a"></param>
         private void Viewport3D_CameraChanged(Object o, RoutedEventArgs a) {
+            // sort all the elements by transparency so it looks ok
+            ReorderTransparentObjects();
+        }
+        private void ReorderTransparentObjects() {
             // sort all the elements by transparency so it looks ok
             ElementSortingHelper.SortModel(Viewport3D.Camera.Position, Viewport3D.Children);
         }
@@ -315,6 +319,9 @@ namespace Balloon.Engine {
                                     if (createCube != null) {
                                         Mode = EngineMode.CreateCube;
                                         Debug.WriteLine("Hands are crossed");
+
+                                        ((CubeVisual3D)Joint3DGeometry[skeleton.TrackingId][JointType.HandLeft]).Material = MaterialHelper.CreateMaterial(_Constants.JointBrush, _Constants.JointCreateBrush);
+                                        ((CubeVisual3D)Joint3DGeometry[skeleton.TrackingId][JointType.HandRight]).Material = MaterialHelper.CreateMaterial(_Constants.JointBrush, _Constants.JointCreateBrush);
                                     }
                                 }
                                 // --old mode
@@ -334,29 +341,43 @@ namespace Balloon.Engine {
                                 // now, what we want to do depends on what mode we are in!
                                 switch (Mode) {
                                     case EngineMode.CreateCube:
-                                        // move and resize the cube we are creating relative to the hands
-                                        Point3D cubeCenter = _3DUtil.Midpoint(leftHandPoint, rightHandPoint);
-                                        cubeCenter.Y += World.FloorHeight;
-                                        createCube.Resize(_3DUtil.DistanceBetween(leftHandPoint, rightHandPoint));
-                                        createCube.MoveTo(cubeCenter);
+                                        // only do this stuff if our arms are not crossed (stops bullshit)
+                                        DenotifyEverything();
+                                        if (leftHandPoint.X > rightHandPoint.X) {
+                                            // move and resize the cube we are creating relative to the hands
+                                            Point3D cubeCenter = _3DUtil.Midpoint(leftHandPoint, rightHandPoint);
+                                            cubeCenter.Y += World.FloorHeight;
+                                            createCube.Resize(_3DUtil.DistanceBetween(leftHandPoint, rightHandPoint));
+                                            createCube.MoveTo(cubeCenter);
 
-                                        // step 3
-                                        // we need to materialise the cube and get out of this process
-                                        // we do this through a timeout 
-                                        // or TODO: A signal
+                                            // step 3
+                                            // we need to materialise the cube and get out of this process
+                                            // we do this through a timeout 
+                                            // or TODO: A signal
 
-                                        // reset the counter if we fall outside the deadzone
-                                        if (previousPoint == null || _3DUtil.DistanceBetween(previousPoint, cubeCenter) > _Constants.CreateStableDeadzone) {
-                                            previousPoint = cubeCenter;
-                                            stableTime = DateTime.Now.Ticks;
-                                        }
-                                        // otherwise if our time has elapsed, material the arsehole and leave create mode!
-                                        else {
-                                            long currentTime = DateTime.Now.Ticks;
-                                            if ((currentTime - stableTime) / TimeSpan.TicksPerMillisecond >= _Constants.CreateStableTimout) {
-                                                Debug.WriteLine("timeout, cube is materialised");
-                                                OnEngineCubeCreated(new EngineCubeCreatedEventArgs(createCube));
-                                                Mode = EngineMode.NormalInteractive;
+                                            // reset the counter if we fall outside the deadzone
+                                            if (previousPoint == null || _3DUtil.DistanceBetween(previousPoint, cubeCenter) > _Constants.CreateStableDeadzone) {
+                                                previousPoint = cubeCenter;
+                                                stableTime = DateTime.Now.Ticks;
+                                            }
+                                            // otherwise if our time has elapsed, materialise the arsehole and leave create mode!
+                                            else {
+                                                long currentTime = DateTime.Now.Ticks;
+
+                                                // fade colour to joint mode colour
+                                                // work out percentage of time through the wait period
+                                                long currentTimeMS = (currentTime - stableTime) / TimeSpan.TicksPerMillisecond;
+                                                //double currentTimePercent = (double)currentTimeMS / (double)_Constants.CreateStableTimout;
+
+                                                if (currentTimeMS >= _Constants.CreateStableTimout) {
+                                                    Debug.WriteLine("timeout, cube is materialised");
+                                                    OnEngineCubeCreated(new EngineCubeCreatedEventArgs(createCube));
+                                                    Mode = EngineMode.NormalInteractive;
+                                                    ReorderTransparentObjects();
+
+                                                    ((CubeVisual3D)Joint3DGeometry[skeleton.TrackingId][JointType.HandLeft]).Material = MaterialHelper.CreateMaterial(_Constants.JointBrush, _Constants.JointBrush);
+                                                    ((CubeVisual3D)Joint3DGeometry[skeleton.TrackingId][JointType.HandRight]).Material = MaterialHelper.CreateMaterial(_Constants.JointBrush, _Constants.JointBrush);
+                                                }
                                             }
                                         }
                                         break;
@@ -450,6 +471,9 @@ namespace Balloon.Engine {
 
             // add it to our world
             World.Cubes.Children.Add(cube.ModelVisual3D);
+
+            // just to sort out the display
+            ReorderTransparentObjects();
         }
         /// <summary>
         /// Remove a cube
@@ -483,7 +507,9 @@ namespace Balloon.Engine {
         /// Denotify absolutely everything - reset
         /// </summary>
         private void DenotifyEverything() {
-            throw new NotImplementedException();
+            // go through each cube, denotify
+            foreach (Cube cube in Cubes)
+                cube.DeNotify();
         }
 
 
